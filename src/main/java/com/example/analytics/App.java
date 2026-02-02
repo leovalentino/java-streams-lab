@@ -60,5 +60,19 @@ public class App {
             System.out.println((i + 1) + ". " + customer.name() + " (ID: " + customer.id() + 
                                ", Tier: " + customer.tier() + ")");
         }
+        
+        // Test the new method
+        System.out.println("\nTesting firstAndLastTransactionOfHighestValueOrder...");
+        Map<String, Object> result = analyticsService.firstAndLastTransactionOfHighestValueOrder(orders);
+        
+        System.out.println("Result:");
+        result.forEach((key, value) -> {
+            if (value instanceof Map) {
+                System.out.println(key + ":");
+                ((Map<?, ?>) value).forEach((k, v) -> System.out.println("  " + k + ": " + v));
+            } else {
+                System.out.println(key + ": " + value);
+            }
+        });
     }
 }

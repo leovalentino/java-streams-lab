@@ -100,10 +100,35 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         }
         return false;
     }
-    
+
     @Override
     public Map<String, Object> firstAndLastTransactionOfHighestValueOrder(List<Order> orders) {
-        // TODO: Implement this method
-        return Map.of();
+        record OrderValue(Order order, BigDecimal totalValue) {}
+
+        return orders.stream()
+                .filter(o -> o.transactions() != null && !o.transactions().isEmpty())
+                .map(o -> {
+                    BigDecimal sum = o.transactions().stream()
+                            .filter(Objects::nonNull)
+                            .map(t -> t.totalValue() != null ? t.totalValue() : BigDecimal.ZERO)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    return new OrderValue(o, sum);
+                })
+                .max(Comparator.comparing(OrderValue::totalValue))
+                .map(ov -> {
+                    var validTs = ov.order().transactions().stream().filter(Objects::nonNull).toList();
+
+                    // SequencedCollection magic
+                    var first = validTs.getFirst();
+                    var last = validTs.getLast();
+
+                    return Map.of(
+                            "orderId", ov.order().id().toString(),
+                            "totalOrderValue", ov.totalValue(),
+                            "firstTransaction", first,
+                            "lastTransaction", last
+                    );
+                })
+                .orElse(Map.of("message", "No valid orders found"));
     }
 }
