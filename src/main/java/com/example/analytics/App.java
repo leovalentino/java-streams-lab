@@ -133,7 +133,7 @@ public class App {
         System.out.println("\nExercise 1: generateDateRangeReport");
         LocalDate start = LocalDate.now().minusDays(7);
         LocalDate end = LocalDate.now();
-        Map<LocalDate, BigDecimal> dateReport = analyticsService.generateDateRangeReport(start, end);
+        Map<LocalDate, BigDecimal> dateReport = analyticsService.generateDateRangeReport(orders, start, end);
         System.out.println("Date range report from " + start + " to " + end + ":");
         dateReport.forEach((date, total) -> 
             System.out.println("  " + date + ": " + total)

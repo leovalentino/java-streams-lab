@@ -34,7 +34,7 @@ public interface AnalyticsService {
     Map<UUID, BigDecimal> calculateComplexRiskScore(List<Order> orders);
     
     // Exercise 1: Stream.iterate for date range report
-    Map<java.time.LocalDate, BigDecimal> generateDateRangeReport(java.time.LocalDate start, java.time.LocalDate end);
+    Map<java.time.LocalDate, BigDecimal> generateDateRangeReport(List<Order> orders, java.time.LocalDate start, java.time.LocalDate end);
     
     // Exercise 2: takeWhile/dropWhile for sorted price range
     List<Order> getOrdersInPriceRangeSorted(List<Order> orders, BigDecimal min, BigDecimal max);

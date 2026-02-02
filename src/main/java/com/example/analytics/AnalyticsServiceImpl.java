@@ -170,14 +170,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
     
     @Override
-    public Map<LocalDate, BigDecimal> generateDateRangeReport(LocalDate start, LocalDate end) {
+    public Map<LocalDate, BigDecimal> generateDateRangeReport(List<Order> orders, LocalDate start, LocalDate end) {
         // Use Stream.iterate to generate dates between start and end (inclusive)
         return Stream.iterate(start, date -> !date.isAfter(end), date -> date.plusDays(1))
                 .collect(Collectors.toMap(
                     date -> date,
-                    date -> {
-                        // Calculate total sales for this date
-                        return orders.stream()
+                    date -> orders.stream()
                                 .filter(order -> order != null && order.orderDate() != null)
                                 .filter(order -> order.orderDate().toLocalDate().equals(date))
                                 .flatMap(order -> order.transactions() != null ? 
@@ -185,8 +183,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                                 .filter(transaction -> transaction != null)
                                 .map(transaction -> transaction.totalValue() != null ? 
                                      transaction.totalValue() : BigDecimal.ZERO)
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    }
+                                .reduce(BigDecimal.ZERO, BigDecimal::add)
                 ));
     }
     
