@@ -32,4 +32,13 @@ public interface AnalyticsService {
     
     // Performance benchmark method: Calculate complex risk score with CPU-intensive operations
     Map<UUID, BigDecimal> calculateComplexRiskScore(List<Order> orders);
+    
+    // Exercise 1: Stream.iterate for date range report
+    Map<java.time.LocalDate, BigDecimal> generateDateRangeReport(java.time.LocalDate start, java.time.LocalDate end);
+    
+    // Exercise 2: takeWhile/dropWhile for sorted price range
+    List<Order> getOrdersInPriceRangeSorted(List<Order> orders, BigDecimal min, BigDecimal max);
+    
+    // Exercise 3: Stream.ofNullable for defensive pipelines
+    List<String> getCustomerEmails(Customer customer);
 }

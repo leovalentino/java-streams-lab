@@ -3,6 +3,7 @@ package com.example.analytics;
 import com.example.analytics.records.Order;
 import com.example.analytics.records.Product;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -120,5 +121,48 @@ public class App {
         
         // Compare ArrayList vs LinkedList
         PerformanceTester.benchmarkArrayListVsLinkedList(analyticsService, new DataGenerator());
+        
+        // Test the new specialized methods
+        System.out.println("\n" + "=".repeat(50));
+        System.out.println("TESTING NEW SPECIALIZED METHODS");
+        System.out.println("=".repeat(50));
+        
+        // Exercise 1: Stream.iterate
+        System.out.println("\nExercise 1: generateDateRangeReport");
+        LocalDate start = LocalDate.now().minusDays(7);
+        LocalDate end = LocalDate.now();
+        Map<LocalDate, BigDecimal> dateReport = analyticsService.generateDateRangeReport(start, end);
+        System.out.println("Date range report from " + start + " to " + end + ":");
+        dateReport.forEach((date, total) -> 
+            System.out.println("  " + date + ": " + total)
+        );
+        
+        // Exercise 2: takeWhile/dropWhile
+        System.out.println("\nExercise 2: getOrdersInPriceRangeSorted");
+        BigDecimal min = new BigDecimal("100.00");
+        BigDecimal max = new BigDecimal("500.00");
+        List<Order> ordersInRange = analyticsService.getOrdersInPriceRangeSorted(orders, min, max);
+        System.out.println("Orders in price range " + min + " to " + max + ": " + ordersInRange.size());
+        if (!ordersInRange.isEmpty()) {
+            System.out.println("First order ID: " + ordersInRange.get(0).id());
+            System.out.println("Last order ID: " + ordersInRange.get(ordersInRange.size() - 1).id());
+        }
+        
+        // Exercise 3: Stream.ofNullable
+        System.out.println("\nExercise 3: getCustomerEmails");
+        // Get a customer from the generated orders
+        Customer sampleCustomer = orders.stream()
+                .filter(order -> order.customer() != null)
+                .map(Order::customer)
+                .findFirst()
+                .orElse(null);
+        
+        if (sampleCustomer != null) {
+            List<String> emails = analyticsService.getCustomerEmails(sampleCustomer);
+            System.out.println("Customer: " + sampleCustomer.name());
+            System.out.println("All emails: " + emails);
+        } else {
+            System.out.println("No customer found for testing");
+        }
     }
 }

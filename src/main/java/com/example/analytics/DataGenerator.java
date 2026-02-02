@@ -142,7 +142,13 @@ public class DataGenerator {
             String email = firstName.toLowerCase() + "." + lastName.toLowerCase() + "@example.com";
             String tier = CUSTOMER_TIERS[ThreadLocalRandom.current().nextInt(CUSTOMER_TIERS.length)];
             
-            customers.add(new Customer(id, name, email, tier));
+            // Generate some random secondary emails (0-2)
+            List<String> secondaryEmails = new ArrayList<>();
+            int numSecondary = ThreadLocalRandom.current().nextInt(0, 3);
+            for (int j = 0; j < numSecondary; j++) {
+                secondaryEmails.add("secondary" + j + "." + lastName.toLowerCase() + "@example.com");
+            }
+            customers.add(new Customer(id, name, email, tier, secondaryEmails));
         }
         return customers;
     }
