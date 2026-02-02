@@ -1,6 +1,7 @@
 package com.example.analytics;
 
 import com.example.analytics.records.Order;
+import java.time.YearMonth;
 import java.util.List;
 
 public class App {
@@ -27,8 +28,37 @@ public class App {
         System.out.println("Orders with empty transactions: " + emptyTransactions);
         System.out.println("Orders with null transactions: " + nullTransactions);
         
-        // The AnalyticsService implementations will be added later
-        System.out.println("\nReady for implementation of AnalyticsService methods.");
-        System.out.println("Please implement the methods in a concrete class.");
+        // Test the AnalyticsService implementation
+        System.out.println("\nTesting AnalyticsService implementation...");
+        
+        AnalyticsService analyticsService = new AnalyticsServiceImpl();
+        
+        // Get current year and month for testing
+        YearMonth currentYearMonth = YearMonth.now();
+        System.out.println("Finding top 3 customers for: " + currentYearMonth);
+        
+        List<com.example.analytics.records.Customer> topCustomers = 
+            analyticsService.topCustomersBySpendInMonth(orders, currentYearMonth);
+        
+        System.out.println("Top " + topCustomers.size() + " customers:");
+        for (int i = 0; i < topCustomers.size(); i++) {
+            com.example.analytics.records.Customer customer = topCustomers.get(i);
+            System.out.println((i + 1) + ". " + customer.name() + " (ID: " + customer.id() + 
+                               ", Tier: " + customer.tier() + ")");
+        }
+        
+        // Also test with a different month (e.g., one month ago)
+        YearMonth previousYearMonth = currentYearMonth.minusMonths(1);
+        System.out.println("\nFinding top 3 customers for: " + previousYearMonth);
+        
+        List<com.example.analytics.records.Customer> previousTopCustomers = 
+            analyticsService.topCustomersBySpendInMonth(orders, previousYearMonth);
+        
+        System.out.println("Top " + previousTopCustomers.size() + " customers:");
+        for (int i = 0; i < previousTopCustomers.size(); i++) {
+            com.example.analytics.records.Customer customer = previousTopCustomers.get(i);
+            System.out.println((i + 1) + ". " + customer.name() + " (ID: " + customer.id() + 
+                               ", Tier: " + customer.tier() + ")");
+        }
     }
 }
