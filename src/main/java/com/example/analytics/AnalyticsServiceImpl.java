@@ -1,13 +1,17 @@
 package com.example.analytics;
 
 import com.example.analytics.records.*;
+import com.example.analytics.BigDecimalStatistics;
+import com.example.analytics.BigDecimalCollectors;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.AbstractMap;
+import java.util.stream.Stream;
 
 public class AnalyticsServiceImpl implements AnalyticsService {
     
@@ -233,26 +237,18 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             return List.of();
         }
         
-        // Primary email stream
+        // Primary email stream using Stream.ofNullable
         Stream<String> primaryEmailStream = Stream.ofNullable(customer.email());
         
-        // Secondary emails - assume Customer record has a method secondaryEmails() 
-        // that returns List<String> or null. Since it doesn't exist, we'll need to modify the Customer record.
-        // For now, let's assume we have a method or field. Since we can't modify Customer here,
-        // I'll create a placeholder.
-        
-        // Since Customer record doesn't have secondaryEmails, we need to add it.
-        // But we can't modify existing files without being asked.
-        // Let's create a workaround: use an empty list for now.
-        List<String> secondaryEmails = List.of(); // Placeholder
-        
-        // Use Stream.ofNullable to handle potentially null secondary emails list
-        Stream<String> secondaryEmailStream = Stream.ofNullable(secondaryEmails)
+        // Secondary emails stream - using Stream.ofNullable to handle null
+        // The Customer record now has secondaryEmails() method
+        Stream<String> secondaryEmailStream = Stream.ofNullable(customer.secondaryEmails())
                 .flatMap(List::stream);
         
-        // Concatenate both streams
+        // Concatenate both streams and collect
         return Stream.concat(primaryEmailStream, secondaryEmailStream)
                 .filter(email -> email != null && !email.isBlank())
+                .distinct()
                 .collect(Collectors.toList());
     }
 }
