@@ -6,81 +6,51 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.AbstractMap;
 
 public class AnalyticsServiceImpl implements AnalyticsService {
     
     @Override
     public List<Customer> topCustomersBySpendInMonth(List<Order> orders, YearMonth yearMonth) {
-        // Map to store customer ID to total spend
-        Map<String, BigDecimal> customerSpendMap = new HashMap<>();
-        Map<String, Customer> customerMap = new HashMap<>();
-        
-        // Process each order
-        for (Order order : orders) {
-            // Skip orders with null customer
-            if (order.customer() == null) {
-                continue;
-            }
-            
-            // Check if order is in the specified YearMonth
-            LocalDateTime orderDate = order.orderDate();
-            YearMonth orderYearMonth = YearMonth.from(orderDate);
-            if (!orderYearMonth.equals(yearMonth)) {
-                continue;
-            }
-            
-            // Process transactions
-            List<Transaction> transactions = order.transactions();
-            if (transactions == null) {
-                continue;
-            }
-            
-            Customer customer = order.customer();
-            String customerId = customer.id();
-            
-            // Store customer info
-            customerMap.putIfAbsent(customerId, customer);
-            
-            // Calculate total spend for this order
-            BigDecimal orderTotal = BigDecimal.ZERO;
-            for (Transaction transaction : transactions) {
-                // Skip transactions with null values
-                if (transaction == null) {
-                    continue;
-                }
-                // Add transaction total value
-                BigDecimal transactionValue = transaction.totalValue();
-                if (transactionValue != null) {
-                    orderTotal = orderTotal.add(transactionValue);
-                }
-            }
-            
-            // Update customer's total spend
-            BigDecimal currentTotal = customerSpendMap.getOrDefault(customerId, BigDecimal.ZERO);
-            customerSpendMap.put(customerId, currentTotal.add(orderTotal));
-        }
-        
-        // Convert map to list of entries for sorting
-        List<Map.Entry<String, BigDecimal>> entries = new ArrayList<>(customerSpendMap.entrySet());
-        
-        // Sort in descending order by total spend
-        entries.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-        
-        // Get top 3 customers
-        List<Customer> topCustomers = new ArrayList<>();
-        int count = 0;
-        for (Map.Entry<String, BigDecimal> entry : entries) {
-            if (count >= 3) {
-                break;
-            }
-            Customer customer = customerMap.get(entry.getKey());
-            if (customer != null) {
-                topCustomers.add(customer);
-                count++;
-            }
-        }
-        
-        return topCustomers;
+        return orders.stream()
+            // Filter out orders with null customer
+            .filter(order -> order.customer() != null)
+            // Filter orders in the specified YearMonth
+            .filter(order -> YearMonth.from(order.orderDate()).equals(yearMonth))
+            // Filter out orders with null transactions
+            .filter(order -> order.transactions() != null)
+            // Flatten each order into its transactions, preserving customer info
+            .flatMap(order -> order.transactions().stream()
+                // Filter out null transactions
+                .filter(transaction -> transaction != null)
+                // Map each transaction to a pair of customer and transaction value
+                .map(transaction -> new AbstractMap.SimpleEntry<>(
+                    order.customer(),
+                    transaction.totalValue() != null ? transaction.totalValue() : BigDecimal.ZERO
+                ))
+            )
+            // Group by customer and sum their transaction values
+            .collect(
+                Collectors.groupingBy(
+                    Map.Entry::getKey,
+                    Collectors.reducing(
+                        BigDecimal.ZERO,
+                        Map.Entry::getValue,
+                        BigDecimal::add
+                    )
+                )
+            )
+            // Get entry set stream
+            .entrySet().stream()
+            // Sort by total spend in descending order
+            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+            // Take top 3
+            .limit(3)
+            // Extract the customer
+            .map(Map.Entry::getKey)
+            // Collect to list
+            .collect(Collectors.toList());
     }
     
     @Override
