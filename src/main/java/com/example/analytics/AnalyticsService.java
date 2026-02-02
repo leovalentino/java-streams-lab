@@ -2,6 +2,7 @@ package com.example.analytics;
 
 import com.example.analytics.records.Order;
 import com.example.analytics.records.Customer;
+import com.example.analytics.records.Product;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -22,4 +23,7 @@ public interface AnalyticsService {
     // Modern: Use SequencedCollections features alongside Streams to get the first and last transaction
     // of the highest-value order
     Map<String, Object> firstAndLastTransactionOfHighestValueOrder(List<Order> orders);
+    
+    // New method: Get statistics for product prices using custom BigDecimal collector
+    BigDecimalStatistics getProductValueStatistics(List<Product> products);
 }

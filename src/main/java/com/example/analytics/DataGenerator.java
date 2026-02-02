@@ -103,7 +103,7 @@ public class DataGenerator {
         return orders;
     }
     
-    private static List<Product> generateProducts(int count) {
+    public static List<Product> generateProducts(int count) {
         List<Product> products = new ArrayList<>();
         Set<String> usedIds = new HashSet<>();
         

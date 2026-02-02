@@ -1,8 +1,11 @@
 package com.example.analytics;
 
 import com.example.analytics.records.Order;
+import com.example.analytics.records.Product;
+
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Map;
 
 public class App {
     public static void main(String[] args) {
@@ -74,5 +77,28 @@ public class App {
                 System.out.println(key + ": " + value);
             }
         });
+        
+        // Test the new BigDecimalStatistics method
+        System.out.println("\nTesting getProductValueStatistics...");
+        // Generate some products
+        List<Product> products = DataGenerator.generateProducts(100);
+        BigDecimalStatistics stats = analyticsService.getProductValueStatistics(products);
+        
+        System.out.println("Product Price Statistics:");
+        System.out.println("Count: " + stats.count());
+        System.out.println("Sum: " + stats.sum());
+        System.out.println("Min: " + stats.min());
+        System.out.println("Max: " + stats.max());
+        System.out.println("Average: " + stats.average());
+        
+        // Test with empty list
+        System.out.println("\nTesting with empty product list...");
+        BigDecimalStatistics emptyStats = analyticsService.getProductValueStatistics(List.of());
+        System.out.println("Empty list statistics:");
+        System.out.println("Count: " + emptyStats.count());
+        System.out.println("Sum: " + emptyStats.sum());
+        System.out.println("Min: " + emptyStats.min());
+        System.out.println("Max: " + emptyStats.max());
+        System.out.println("Average: " + emptyStats.average());
     }
 }

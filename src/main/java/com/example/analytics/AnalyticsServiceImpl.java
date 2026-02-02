@@ -1,6 +1,8 @@
 package com.example.analytics;
 
 import com.example.analytics.records.*;
+import com.example.analytics.BigDecimalStatistics;
+import com.example.analytics.BigDecimalCollectors;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -130,5 +132,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                     );
                 })
                 .orElse(Map.of("message", "No valid orders found"));
+    }
+    
+    @Override
+    public BigDecimalStatistics getProductValueStatistics(List<Product> products) {
+        return products.stream()
+                .collect(BigDecimalCollectors.toBigDecimalStatistics(Product::price));
     }
 }
