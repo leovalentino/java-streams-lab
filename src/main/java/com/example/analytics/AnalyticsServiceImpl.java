@@ -14,43 +14,38 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     public List<Customer> topCustomersBySpendInMonth(List<Order> orders, YearMonth yearMonth) {
         return orders.stream()
-            // Filter out orders with null customer
             .filter(order -> order.customer() != null)
-            // Filter orders in the specified YearMonth
             .filter(order -> YearMonth.from(order.orderDate()).equals(yearMonth))
-            // Filter out orders with null transactions
             .filter(order -> order.transactions() != null)
-            // Flatten each order into its transactions, preserving customer info
             .flatMap(order -> order.transactions().stream()
-                // Filter out null transactions
                 .filter(transaction -> transaction != null)
-                // Map each transaction to a pair of customer and transaction value
                 .map(transaction -> new AbstractMap.SimpleEntry<>(
                     order.customer(),
                     transaction.totalValue() != null ? transaction.totalValue() : BigDecimal.ZERO
                 ))
             )
-            // Group by customer and sum their transaction values
             .collect(
-                Collectors.groupingBy(
-                    Map.Entry::getKey,
-                    Collectors.reducing(
-                        BigDecimal.ZERO,
-                        Map.Entry::getValue,
-                        BigDecimal::add
-                    )
+                Collectors.teeing(
+                    // First collector: group by customer and sum their transaction values
+                    Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(
+                            Map.Entry::getValue,
+                            Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+                        )
+                    ),
+                    // Second collector: collect all entries to pass to merger
+                    // We can use Collectors.toList() but it's not used in the merger
+                    // To be more efficient, we can use a dummy collector
+                    Collectors.toList(),
+                    // Merger: take the map, sort entries by value in descending order, take top 3, and extract customers
+                    (customerTotalMap, unusedList) -> customerTotalMap.entrySet().stream()
+                        .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                        .limit(3)
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toList())
                 )
-            )
-            // Get entry set stream
-            .entrySet().stream()
-            // Sort by total spend in descending order
-            .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
-            // Take top 3
-            .limit(3)
-            // Extract the customer
-            .map(Map.Entry::getKey)
-            // Collect to list
-            .collect(Collectors.toList());
+            );
     }
     
     @Override
