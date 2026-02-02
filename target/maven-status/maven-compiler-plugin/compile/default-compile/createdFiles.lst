@@ -3,5 +3,6 @@ com/example/analytics/records/Product.class
 com/example/analytics/AnalyticsService.class
 com/example/analytics/App.class
 com/example/analytics/records/Customer.class
+com/example/analytics/AnalyticsServiceImpl.class
 com/example/analytics/records/Transaction.class
 com/example/analytics/DataGenerator.class
