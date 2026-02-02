@@ -1,8 +1,10 @@
 package com.example.analytics;
 
+import com.example.analytics.records.Customer;
 import com.example.analytics.records.Order;
 import com.example.analytics.records.Product;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
