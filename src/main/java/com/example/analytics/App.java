@@ -100,5 +100,25 @@ public class App {
         System.out.println("Min: " + emptyStats.min());
         System.out.println("Max: " + emptyStats.max());
         System.out.println("Average: " + emptyStats.average());
+        
+        // Run performance benchmarks
+        System.out.println("\n" + "=".repeat(50));
+        System.out.println("PERFORMANCE BENCHMARKS");
+        System.out.println("=".repeat(50));
+        
+        // Create a larger dataset for performance testing
+        List<Order> largeOrders = DataGenerator.generateOrders(50000);
+        
+        // Test sequential vs parallel
+        PerformanceTester.benchmarkSequentialVsParallel(analyticsService, largeOrders);
+        
+        // Test different sizes
+        PerformanceTester.benchmarkDifferentSizes(analyticsService, new DataGenerator());
+        
+        // Demonstrate thread safety issues
+        PerformanceTester.demonstrateThreadSafetyIssue();
+        
+        // Compare ArrayList vs LinkedList
+        PerformanceTester.benchmarkArrayListVsLinkedList(analyticsService, new DataGenerator());
     }
 }

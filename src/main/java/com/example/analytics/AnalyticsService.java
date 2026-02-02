@@ -3,9 +3,12 @@ package com.example.analytics;
 import com.example.analytics.records.Order;
 import com.example.analytics.records.Customer;
 import com.example.analytics.records.Product;
+
+import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface AnalyticsService {
     
@@ -26,4 +29,7 @@ public interface AnalyticsService {
     
     // New method: Get statistics for product prices using custom BigDecimal collector
     BigDecimalStatistics getProductValueStatistics(List<Product> products);
+    
+    // Performance benchmark method: Calculate complex risk score with CPU-intensive operations
+    Map<UUID, BigDecimal> calculateComplexRiskScore(List<Order> orders);
 }

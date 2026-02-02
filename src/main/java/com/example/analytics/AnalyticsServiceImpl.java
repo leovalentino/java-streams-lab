@@ -1,8 +1,6 @@
 package com.example.analytics;
 
 import com.example.analytics.records.*;
-import com.example.analytics.BigDecimalStatistics;
-import com.example.analytics.BigDecimalCollectors;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -138,5 +136,32 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     public BigDecimalStatistics getProductValueStatistics(List<Product> products) {
         return products.stream()
                 .collect(BigDecimalCollectors.toBigDecimalStatistics(Product::price));
+    }
+    
+    @Override
+    public Map<UUID, BigDecimal> calculateComplexRiskScore(List<Order> orders) {
+        return orders.stream()
+                .filter(order -> order != null)
+                .collect(Collectors.toMap(
+                    Order::id,
+                    order -> {
+                        // Simulate CPU-intensive calculation
+                        BigDecimal riskScore = BigDecimal.ZERO;
+                        // Perform 1000 iterations of complex operations
+                        for (int i = 0; i < 1000; i++) {
+                            // Use various mathematical operations to simulate complexity
+                            BigDecimal temp = BigDecimal.valueOf(Math.sin(order.id().getMostSignificantBits() + i));
+                            temp = temp.multiply(BigDecimal.valueOf(Math.cos(order.id().getLeastSignificantBits() - i)));
+                            temp = temp.pow(2);
+                            riskScore = riskScore.add(temp.abs());
+                        }
+                        // Normalize the score
+                        if (order.transactions() != null) {
+                            int transactionCount = order.transactions().size();
+                            riskScore = riskScore.divide(BigDecimal.valueOf(Math.max(1, transactionCount)), java.math.MathContext.DECIMAL128);
+                        }
+                        return riskScore;
+                    }, (existingValue, newValue) -> existingValue
+                ));
     }
 }

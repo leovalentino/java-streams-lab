@@ -2,7 +2,10 @@
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/AnalyticsService.java
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/records/Product.java
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/records/Customer.java
+/home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/PerformanceTester.java
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/App.java
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/AnalyticsServiceImpl.java
+/home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/BigDecimalStatistics.java
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/DataGenerator.java
 /home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/records/Order.java
+/home/leonardov/Dev/Learning/java-core/java-streams-lab/src/main/java/com/example/analytics/BigDecimalCollectors.java
